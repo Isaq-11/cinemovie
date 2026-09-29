@@ -1,5 +1,8 @@
-import 'package:cine_movie/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'router/app_router.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const CineMovie());
@@ -10,14 +13,20 @@ class CineMovie extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CineGestão',
+    return MaterialApp.router(
+      title: 'CineMovie',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const Scaffold(
-        body: Center(child: Text('CineMovie Inicializado!')),
-      ),
-        //home: const FilmeFormScreen(),
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.dark,
+      routerConfig: appRouter,
+      locale: const Locale('pt', 'BR'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('pt', 'BR'), Locale('en', 'US')],
     );
   }
 }

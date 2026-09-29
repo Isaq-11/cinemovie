@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import '../widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
+import '../../widgets/widgets.dart';
+import '../../router/app_routes.dart';
 
-class FilmeFormScreen extends StatefulWidget {
-  const FilmeFormScreen({super.key, this.id});
+class MovieFormScreen extends StatefulWidget {
+  const MovieFormScreen({super.key, this.id});
   final String? id; // null = novo filme; preenchido = edição (futuro)
 
   @override
-  State<FilmeFormScreen> createState() => _FilmeFormScreenState();
+  State<MovieFormScreen> createState() => _MovieFormScreenState();
 }
 
-class _FilmeFormScreenState extends State<FilmeFormScreen> {
+class _MovieFormScreenState extends State<MovieFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _buscaCtrl = TextEditingController();
   final _tituloCtrl = TextEditingController();
@@ -20,8 +22,15 @@ class _FilmeFormScreenState extends State<FilmeFormScreen> {
   String? _classificacao;
 
   static const _generos = [
-    'Ação', 'Animação', 'Aventura', 'Comédia', 'Documentário',
-    'Drama', 'Ficção científica', 'Romance', 'Terror',
+    'Ação',
+    'Animação',
+    'Aventura',
+    'Comédia',
+    'Documentário',
+    'Drama',
+    'Ficção científica',
+    'Romance',
+    'Terror',
   ];
   static const _classificacoes = ['L', '10', '12', '14', '16', '18'];
 
@@ -95,7 +104,8 @@ class _FilmeFormScreenState extends State<FilmeFormScreen> {
                       value: _genero,
                       itemLabel: (g) => g,
                       onChanged: (v) => setState(() => _genero = v),
-                      validator: (v) => v == null ? 'Selecione um gênero' : null,
+                      validator: (v) =>
+                          v == null ? 'Selecione um gênero' : null,
                     ),
                     ChoiceChipGroup(
                       label: 'Classificação indicativa',
@@ -113,7 +123,13 @@ class _FilmeFormScreenState extends State<FilmeFormScreen> {
       bottomNavigationBar: FormActionBar(
         primaryLabel: 'Salvar filme',
         primaryIcon: Icons.check,
-        onPrimary: () => _formKey.currentState!.validate(),
+        onPrimary: () {
+          _formKey.currentState!.validate();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => SessionFormScreen()),
+          );
+        },
         secondaryLabel: 'Cancelar',
         onSecondary: () => Navigator.of(context).maybePop(),
       ),
