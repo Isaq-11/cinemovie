@@ -45,8 +45,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       footer: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Já tem conta?'),
-          AppTextButton(label: 'Entrar', onPressed: _logar),
+          AuthFooterLink(
+            text: 'Já tem conta?',
+            actionLabel: 'Entrar',
+            onPressed: () => context.go(AppRoutes.login),
+          ),
         ],
       ),
       child: Form(
@@ -69,29 +72,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               textInputAction: TextInputAction.next,
               validator: Validators.obrigatorio('Informe o nome do cinema'),
             ),
-            AppTextField(
-              controller: _emailCtrl,
-              label: 'E-mail',
-              prefixIcon: Icons.mail_outline,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.email],
-              validator: Validators.email,
-            ),
-            AppTextField(
-              controller: _senhaCtrl,
-              label: 'Senha',
-              prefixIcon: Icons.lock_outline,
-              obscureText: true,
-              textInputAction: TextInputAction.next,
-              validator: Validators.senha,
-            ),
-            AppTextField(
+            EmailField(controller: _emailCtrl),
+            PasswordField(controller: _senhaCtrl),
+            PasswordField(
               controller: _confirmaCtrl,
               label: 'Confirmar senha',
-              prefixIcon: Icons.lock_reset,
-              obscureText: true,
-              textInputAction: TextInputAction.done,
               validator: (v) =>
                   v != _senhaCtrl.text ? 'As senhas não coincidem' : null,
             ),
