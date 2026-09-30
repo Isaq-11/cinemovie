@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_routes.dart';
 import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
 
 class SessionsScreen extends StatefulWidget {
   const SessionsScreen({super.key});
+
   @override
   State<SessionsScreen> createState() => _SessionsScreenState();
 }
@@ -14,7 +17,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sessoes = _filtro == 'Todas'
+    final sessoesFiltradas = _filtro == 'Todas'
         ? mockSessoes
         : mockSessoes.where((s) => s.data == _filtro).toList();
 
@@ -33,39 +36,53 @@ class _SessionsScreenState extends State<SessionsScreen> {
               ),
             ),
           ),
+
           Expanded(
-            child: sessoes.isEmpty
-                ? EmptyState(
-                    icon: Icons.event_busy_outlined,
-                    title: 'Nenhuma sessão',
-                    message: 'Não há sessões para o filtro escolhido.',
-                    actionLabel: 'Nova sessão',
-                    onAction: () {},
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
-                    itemCount: sessoes.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (_, i) {
-                      final s = sessoes[i];
-                      return SessionCard(
-                        filmeTitulo: s.filme,
-                        posterUrl: s.poster,
-                        sala: s.sala,
-                        data: s.data,
-                        horario: s.horario,
-                        formato: s.formato,
-                        vendidos: s.vendidos,
-                        capacidade: s.capacidade,
-                        onTap: () {},
+            child: ItemList<SessaoMock>(
+              items: sessoesFiltradas,
+              empty: EmptyState(
+                icon: Icons.event_busy_outlined,
+                title: 'Nenhuma sessão encontrada',
+                message: 'Não há sessões programadas para este filtro.',
+                actionLabel: 'Nova sessão',
+                onAction: () => context.push(AppRoutes.sessionNew),
+              ),
+              itemBuilder: (context, s, i) {
+                final indiceOriginal = mockSessoes.indexOf(s);
+                return InfoCard(
+                  title: s.filme,
+                  subtitle: '${s.data} às ${s.horario}',
+                  leading: PosterPreview(imageUrl: s.poster, width: 64),
+                  chips: [
+                    InfoChip(label: s.sala, icon: Icons.meeting_room_outlined),
+                    InfoChip(label: s.formato, icon: Icons.theaters_outlined),
+                    InfoChip(
+                      label:
+                          '${s.vendidos}/${s.capacidade} vendidos', // Ocupação da sala
+                      icon: Icons.confirmation_number_outlined,
+                    ),
+                  ],
+                  trailing: ItemActionsMenu(
+                    onEdit: () => context.push(AppRoutes.sessionEdit('$i')),
+                    onDelete: () async {
+                      final ok = await confirmDelete(
+                        context,
+                        itemName: 'Sessão de ${s.filme}',
                       );
+                      if (ok && context.mounted)
+                        showAppSnackBar(context, 'Sessão excluída.');
                     },
                   ),
+                  onTap: () =>
+                      context.push(AppRoutes.sessionDetail('$indiceOriginal')),
+                );
+              },
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => context.push(AppRoutes.sessionNew),
         icon: const Icon(Icons.add),
         label: const Text('Nova sessão'),
       ),

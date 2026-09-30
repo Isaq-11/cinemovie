@@ -6,7 +6,7 @@ import '../../constants/app_options.dart';
 
 class MovieFormScreen extends StatefulWidget {
   const MovieFormScreen({super.key, this.id});
-  final String? id; 
+  final String? id;
 
   @override
   State<MovieFormScreen> createState() => _MovieFormScreenState();
@@ -41,9 +41,9 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
   @override
   Widget build(BuildContext context) {
     return FormScaffold(
-      title: widget.id == null ? 'Novo filme' : 'Editar filme', 
-      formKey: _formKey, 
-      primaryLabel: 'Salvar filme', 
+      title: widget.id == null ? 'Novo filme' : 'Editar filme',
+      formKey: _formKey,
+      primaryLabel: 'Salvar filme',
       primaryIcon: Icons.check,
       onPrimary: _salvar,
       children: [
@@ -66,6 +66,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
               AppTextField(
                 controller: _tituloCtrl,
                 label: 'Título',
+                hint: 'Ex.: Clube da Luta',
                 prefixIcon: Icons.title,
                 textInputAction: TextInputAction.next,
                 validator: Validators.obrigatorio('Informe o título'),
@@ -83,7 +84,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
                 prefixIcon: Icons.schedule,
                 suffixText: 'min',
                 keyboardType: TextInputType.number,
-                validator: Validators.inteiroPositivo, // 👈 Simplificado para usar a referência direta
+                validator: Validators.inteiroPositivo,
               ),
               AppDropdownField<String>(
                 label: 'Gênero',
@@ -98,12 +99,12 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
                 label: 'Classificação indicativa',
                 options: AppOptions.classificacoes,
                 selected: _classificacao,
-                onSelected: (v) => setState(() => _classificacao), 
+                onSelected: (v) => setState(() => _classificacao),
               ),
             ],
           ),
         ),
-      ], 
+      ],
     );
   }
 }

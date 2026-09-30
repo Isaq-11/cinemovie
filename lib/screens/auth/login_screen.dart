@@ -37,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
       footer: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Ainda não tem conta?'),
           AuthFooterLink(
             text: 'Ainda não tem conta?',
             actionLabel: 'Cadastre-se',

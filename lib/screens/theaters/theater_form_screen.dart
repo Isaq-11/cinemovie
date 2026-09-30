@@ -1,8 +1,8 @@
+import 'package:cine_movie/constants/app_options.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../utils/validators.dart';
 import '../../widgets/widgets.dart';
-import '../../router/app_routes.dart';
 
 class TheaterFormScreen extends StatefulWidget {
   const TheaterFormScreen({super.key, this.id});
@@ -21,8 +21,6 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
   bool _acessivel = true;
   bool _ativa = true;
 
-  static const _tipos = ['2D', '3D', 'IMAX', 'VIP', 'XD'];
-
   @override
   void dispose() {
     _nomeCtrl.dispose();
@@ -37,159 +35,73 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
     context.pop();
   }
 
+  @override
   Widget build(BuildContext context) {
     return FormScaffold(
-      title: widget.id == null ? 'Nova sala' : 'Editar sala', 
-      formKey: _formKey, 
-      primaryLabel: 'Salvar sala', 
+      title: widget.id == null ? 'Nova sala' : 'Editar sala',
+      formKey: _formKey,
+      primaryLabel: 'Salvar sala',
       primaryIcon: Icons.check,
       onPrimary: _salvar,
       children: [
         FormSection(
-          title: 'Buscar no TMDB',
-          icon: Icons.travel_explore,
-          child: AppSearchBar(
-            controller: _buscaCtrl,
-            hint: 'Digite o título do filme',
-            onSearch: () {}, // lógica virá depois
-          ),
-        ),
-        FormSection(
-          title: 'Informações do filme',
-          icon: Icons.movie_outlined,
+          title: 'Informações da sala',
+          icon: Icons.meeting_room_outlined,
           child: Column(
             spacing: 16,
             children: [
-              const PosterPreview(imageUrl: null, width: 140),
               AppTextField(
-                controller: _tituloCtrl,
-                label: 'Título',
-                prefixIcon: Icons.title,
+                controller: _nomeCtrl,
+                label: 'Nome',
+                hint: 'Ex.: Sala 1',
+                prefixIcon: Icons.badge_outlined,
                 textInputAction: TextInputAction.next,
-                validator: Validators.obrigatorio('Informe o título'),
+                validator: Validators.obrigatorio('Informe o nome'),
               ),
               AppTextField(
-                controller: _sinopseCtrl,
-                label: 'Sinopse',
-                prefixIcon: Icons.notes,
-                maxLines: 4,
-                keyboardType: TextInputType.multiline,
-              ),
-              AppTextField(
-                controller: _duracaoCtrl,
-                label: 'Duração',
-                prefixIcon: Icons.schedule,
-                suffixText: 'min',
+                controller: _capacidadeCtrl,
+                label: 'Capacidade',
+                suffixText: 'assentos',
                 keyboardType: TextInputType.number,
-                validator: Validators.inteiroPositivo, // 👈 Simplificado para usar a referência direta
+                prefixIcon: Icons.event_seat_outlined,
+                validator: Validators.inteiroPositivo,
               ),
               AppDropdownField<String>(
-                label: 'Gênero',
-                prefixIcon: Icons.category_outlined,
-                items: AppOptions.generos,
-                value: _genero,
-                itemLabel: (g) => g,
-                onChanged: (v) => setState(() => _genero = v),
-                validator: (v) => v == null ? 'Selecione um gênero' : null,
-              ),
-              ChoiceChipGroup(
-                label: 'Classificação indicativa',
-                options: AppOptions.classificacoes,
-                selected: _classificacao,
-                onSelected: (v) => setState(() => _classificacao), 
+                label: 'Tipo de Sala',
+                prefixIcon: Icons.theaters_outlined,
+                items: AppOptions.tiposSala,
+                value: _tipo,
+                itemLabel: (t) => t,
+                onChanged: (v) => setState(() => _tipo = v),
+                validator: (v) => v == null ? 'Selecione o tipo da sala' : null,
               ),
             ],
           ),
         ),
-      ], 
+        const SizedBox(height: 16),
+        FormSection(
+          title: 'Características',
+          icon: Icons.tune,
+          child: Column(
+            children: [
+              AppSwitchTile(
+                icon: Icons.accessible,
+                title: 'Sala acessível',
+                subtitle: 'Espaço para cadeirantes e mobilidade reduzida',
+                value: _acessivel,
+                onChanged: (v) => setState(() => _acessivel = v),
+              ),
+              AppSwitchTile(
+                icon: Icons.power_settings_new,
+                title: 'Sala ativa',
+                subtitle: 'Disponível para receber novas sessões',
+                value: _ativa,
+                onChanged: (v) => setState(() => _ativa = v),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(widget.id == null ? 'Nova sala' : 'Editar sala'),
-    //   ),
-    //   body: SafeArea(
-    //     child: Form(
-    //       key: _formKey,
-    //       child: ListView(
-    //         padding: const EdgeInsets.all(16),
-    //         children: [
-    //           FormSection(
-    //             title: 'Identificação',
-    //             icon: Icons.meeting_room_outlined,
-    //             child: Column(
-    //               spacing: 16,
-    //               children: [
-    //                 AppTextField(
-    //                   controller: _nomeCtrl,
-    //                   label: 'Nome da sala',
-    //                   hint: 'Ex.: Sala 1',
-    //                   prefixIcon: Icons.badge_outlined,
-    //                   textInputAction: TextInputAction.next,
-    //                   validator: Validators.obrigatorio(
-    //                     'Informe o nome da sala',
-    //                   ),
-    //                 ),
-    //                 AppDropdownField<String>(
-    //                   label: 'Tipo de sala',
-    //                   prefixIcon: Icons.theaters_outlined,
-    //                   items: _tipos,
-    //                   value: _tipo,
-    //                   itemLabel: (t) => t,
-    //                   onChanged: (v) => setState(() => _tipo = v),
-    //                   validator: (v) => v == null ? 'Selecione o tipo' : null,
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //           const SizedBox(height: 16),
-    //           FormSection(
-    //             title: 'Capacidade',
-    //             icon: Icons.event_seat_outlined,
-    //             child: AppTextField(
-    //               controller: _capacidadeCtrl,
-    //               label: 'Quantidade de assentos',
-    //               prefixIcon: Icons.event_seat_outlined,
-    //               suffixText: 'assentos',
-    //               keyboardType: TextInputType.number,
-    //               textInputAction: TextInputAction.done,
-    //               validator: Validators.inteiroPositivo,
-    //             ),
-    //           ),
-    //           const SizedBox(height: 16),
-    //           FormSection(
-    //             title: 'Características',
-    //             icon: Icons.tune,
-    //             child: Column(
-    //               children: [
-    //                 AppSwitchTile(
-    //                   icon: Icons.accessible,
-    //                   title: 'Sala acessível',
-    //                   subtitle: 'Espaço para cadeirantes e mobilidade reduzida',
-    //                   value: _acessivel,
-    //                   onChanged: (v) => setState(() => _acessivel = v),
-    //                 ),
-    //                 AppSwitchTile(
-    //                   icon: Icons.power_settings_new,
-    //                   title: 'Sala ativa',
-    //                   subtitle: 'Disponível para receber novas sessões',
-    //                   value: _ativa,
-    //                   onChanged: (v) => setState(() => _ativa = v),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    //   bottomNavigationBar: FormActionBar(
-    //     primaryLabel: 'Salvar sala',
-    //     primaryIcon: Icons.check,
-    //     onPrimary: _salvar,
-    //     secondaryLabel: 'Cancelar',
-    //     onSecondary: () => Navigator.of(context).maybePop(),
-    //   ),
-    // );
   }
 }
