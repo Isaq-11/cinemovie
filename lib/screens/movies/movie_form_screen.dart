@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/widgets.dart';
-import '../../router/app_routes.dart';
+import '../../utils/validators.dart';
+import '../../constants/app_options.dart';
 
 class MovieFormScreen extends StatefulWidget {
   const MovieFormScreen({super.key, this.id});
-  final String? id; // null = novo filme; preenchido = edição (futuro)
+  final String? id; 
 
   @override
   State<MovieFormScreen> createState() => _MovieFormScreenState();
@@ -19,20 +20,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
   final _duracaoCtrl = TextEditingController();
 
   String? _genero;
-  String? _classificacao;
-
-  static const _generos = [
-    'Ação',
-    'Animação',
-    'Aventura',
-    'Comédia',
-    'Documentário',
-    'Drama',
-    'Ficção científica',
-    'Romance',
-    'Terror',
-  ];
-  static const _classificacoes = ['L', '10', '12', '14', '16', '18'];
+  String? _classificacao = 'L';
 
   @override
   void dispose() {
@@ -43,96 +31,79 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
     super.dispose();
   }
 
-  String? _obrigatorio(String? v, String msg) =>
-      (v == null || v.trim().isEmpty) ? msg : null;
+  void _salvar() {
+    if (!_formKey.currentState!.validate()) return;
+    // TODO (Firebase): salvar filme
+    showAppSnackBar(context, 'Filme salvo!');
+    context.pop();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.id == null ? 'Novo filme' : 'Editar filme'),
-      ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
+    return FormScaffold(
+      title: widget.id == null ? 'Novo filme' : 'Editar filme', 
+      formKey: _formKey, 
+      primaryLabel: 'Salvar filme', 
+      primaryIcon: Icons.check,
+      onPrimary: _salvar,
+      children: [
+        FormSection(
+          title: 'Buscar no TMDB',
+          icon: Icons.travel_explore,
+          child: AppSearchBar(
+            controller: _buscaCtrl,
+            hint: 'Digite o título do filme',
+            onSearch: () {}, // lógica virá depois
+          ),
+        ),
+        FormSection(
+          title: 'Informações do filme',
+          icon: Icons.movie_outlined,
+          child: Column(
+            spacing: 16,
             children: [
-              FormSection(
-                title: 'Buscar no TMDB',
-                icon: Icons.travel_explore,
-                child: AppSearchBar(
-                  controller: _buscaCtrl,
-                  hint: 'Digite o título do filme',
-                  onSearch: () {}, // lógica virá depois
-                ),
+              const PosterPreview(imageUrl: null, width: 140),
+              AppTextField(
+                controller: _tituloCtrl,
+                label: 'Título',
+                prefixIcon: Icons.title,
+                textInputAction: TextInputAction.next,
+                validator: Validators.obrigatorio('Informe o título'),
               ),
-              const SizedBox(height: 16),
-              FormSection(
-                title: 'Informações do filme',
-                icon: Icons.movie_outlined,
-                child: Column(
-                  spacing: 16, // Flutter 3.27+; senão, use SizedBox
-                  children: [
-                    const PosterPreview(imageUrl: null, width: 140),
-                    AppTextField(
-                      controller: _tituloCtrl,
-                      label: 'Título',
-                      prefixIcon: Icons.title,
-                      textInputAction: TextInputAction.next,
-                      validator: (v) => _obrigatorio(v, 'Informe o título'),
-                    ),
-                    AppTextField(
-                      controller: _sinopseCtrl,
-                      label: 'Sinopse',
-                      prefixIcon: Icons.notes,
-                      maxLines: 4,
-                      keyboardType: TextInputType.multiline,
-                    ),
-                    AppTextField(
-                      controller: _duracaoCtrl,
-                      label: 'Duração',
-                      prefixIcon: Icons.schedule,
-                      suffixText: 'min',
-                      keyboardType: TextInputType.number,
-                      validator: (v) => _obrigatorio(v, 'Informe a duração'),
-                    ),
-                    AppDropdownField<String>(
-                      label: 'Gênero',
-                      prefixIcon: Icons.category_outlined,
-                      items: _generos,
-                      value: _genero,
-                      itemLabel: (g) => g,
-                      onChanged: (v) => setState(() => _genero = v),
-                      validator: (v) =>
-                          v == null ? 'Selecione um gênero' : null,
-                    ),
-                    ChoiceChipGroup(
-                      label: 'Classificação indicativa',
-                      options: _classificacoes,
-                      selected: _classificacao,
-                      onSelected: (v) => setState(() => _classificacao = v),
-                    ),
-                  ],
-                ),
+              AppTextField(
+                controller: _sinopseCtrl,
+                label: 'Sinopse',
+                prefixIcon: Icons.notes,
+                maxLines: 4,
+                keyboardType: TextInputType.multiline,
+              ),
+              AppTextField(
+                controller: _duracaoCtrl,
+                label: 'Duração',
+                prefixIcon: Icons.schedule,
+                suffixText: 'min',
+                keyboardType: TextInputType.number,
+                validator: Validators.inteiroPositivo, // 👈 Simplificado para usar a referência direta
+              ),
+              AppDropdownField<String>(
+                label: 'Gênero',
+                prefixIcon: Icons.category_outlined,
+                items: AppOptions.generos,
+                value: _genero,
+                itemLabel: (g) => g,
+                onChanged: (v) => setState(() => _genero = v),
+                validator: (v) => v == null ? 'Selecione um gênero' : null,
+              ),
+              ChoiceChipGroup(
+                label: 'Classificação indicativa',
+                options: AppOptions.classificacoes,
+                selected: _classificacao,
+                onSelected: (v) => setState(() => _classificacao), 
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: FormActionBar(
-        primaryLabel: 'Salvar filme',
-        primaryIcon: Icons.check,
-        onPrimary: () {
-          _formKey.currentState!.validate();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => SessionFormScreen()),
-          );
-        },
-        secondaryLabel: 'Cancelar',
-        onSecondary: () => Navigator.of(context).maybePop(),
-      ),
+      ], 
     );
   }
 }

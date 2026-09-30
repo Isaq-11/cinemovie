@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_routes.dart';
 import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
 
@@ -7,57 +9,72 @@ class TheatersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cores = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Salas')),
-      body: mockSalas.isEmpty
-          ? EmptyState(
-              icon: Icons.meeting_room_outlined,
-              title: 'Nenhuma sala cadastrada',
-              message: 'Cadastre uma sala para poder criar sessões.',
-              actionLabel: 'Cadastrar sala',
-              onAction: () {},
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-              itemCount: mockSalas.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) {
-                final s = mockSalas[i];
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: AppSearchBar(
+              hint: 'Buscar sala cadastrado...',
+              onSearch: () {},
+              onChanged: (_) {},
+            ),
+          ),
+          Expanded(
+            child: ItemList<SalaMock>(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 96),
+              items: mockSalas, 
+              empty: EmptyState(
+                icon: Icons.movie_outlined, 
+                title: 'Nenhuma sala cadastrada', 
+                message: 'Cadastre sua primeira sala para receber as futuras sessões.',
+                actionLabel: 'Cadastrar sala',
+                onAction: () => context.push(AppRoutes.theaterNew),
+              ),
+              itemBuilder: (context, s, i) {
                 return InfoCard(
                   title: s.nome,
                   subtitle: 'Sala ${s.tipo}',
                   leading: CircleAvatar(
-                    radius: 26,
-                    backgroundColor: cores.primaryContainer,
-                    child: Icon(
-                      Icons.meeting_room_outlined,
-                      color: cores.onPrimaryContainer,
-                    ),
+                     radius: 26,
+                     //backgroundColor: .primaryContainer,
+                     child: Icon(
+                       Icons.meeting_room_outlined,
+                       color: Colors.grey,
+                     ),
                   ),
                   chips: [
                     InfoChip(
                       label: '${s.capacidade} assentos',
-                      icon: Icons.event_seat_outlined,
+                      icon: Icons.category_outlined,
                     ),
                     if (s.acessivel)
                       const InfoChip(
                         label: 'Acessível',
                         icon: Icons.accessible,
-                      ),
+                    ),
                     if (!s.ativa)
                       InfoChip(
                         label: 'Inativa',
                         icon: Icons.block,
-                        color: cores.error,
-                      ),
+                        color: Colors.red,
+                    ),                 
                   ],
-                  trailing: ItemActionsMenu(onEdit: () {}, onDelete: () {}),
-                  onTap: () {},
+                  trailing: ItemActionsMenu(
+                    onEdit: () => context.push(AppRoutes.theaterEdit('$i')), 
+                    onDelete: () async {
+                      final ok = await confirmDelete(context, itemName: s.nome);
+                      if (ok && context.mounted) showAppSnackBar(context, 'Sala excluída.');
+                    },
+                  ),
+                  onTap: () => context.push(AppRoutes.theaterEdit('$i')),
                 );
-              },
+              }
             ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         icon: const Icon(Icons.add),

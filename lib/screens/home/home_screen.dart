@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_routes.dart';
 import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
 
@@ -15,7 +17,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Perfil',
-            onPressed: () {},
+            onPressed: () => context.push(AppRoutes.profile),
             icon: const Icon(Icons.account_circle_outlined),
           ),
         ],
@@ -44,7 +46,7 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.movie_outlined,
                   value: '${mockFilmes.length}',
                   label: 'Filmes',
-                  onTap: () {},
+                  onTap: () => context.go(AppRoutes.movies),
                 ),
               ),
               Expanded(
@@ -52,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.meeting_room_outlined,
                   value: '${mockSalas.length}',
                   label: 'Salas',
-                  onTap: () {},
+                  onTap: () => context.go(AppRoutes.theaters),
                 ),
               ),
               Expanded(
@@ -60,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                   icon: Icons.event_outlined,
                   value: '${mockSessoes.length}',
                   label: 'Sessões',
-                  onTap: () {},
+                  onTap: () => context.go(AppRoutes.sessions),
                 ),
               ),
             ],
@@ -69,10 +71,10 @@ class HomeScreen extends StatelessWidget {
           SectionTitle(
             title: 'Próximas sessões',
             actionLabel: 'Ver todas',
-            onAction: () {},
+            onAction: () => context.go(AppRoutes.sessions),
           ),
           const SizedBox(height: 12),
-          for (final s in mockSessoes.take(3)) ...[
+          for (final (i, s) in mockSessoes.take(3).indexed) ...[
             SessionCard(
               filmeTitulo: s.filme,
               posterUrl: s.poster,
@@ -82,7 +84,7 @@ class HomeScreen extends StatelessWidget {
               formato: s.formato,
               vendidos: s.vendidos,
               capacidade: s.capacidade,
-              onTap: () {},
+              onTap: () => context.push(AppRoutes.sessionDetail('$i')),
             ),
             const SizedBox(height: 12),
           ],

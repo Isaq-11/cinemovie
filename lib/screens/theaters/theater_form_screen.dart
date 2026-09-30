@@ -31,99 +31,165 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
   }
 
   void _salvar() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
     if (!_formKey.currentState!.validate()) return;
-    // TODO: salvar sala
+    // TODO (Firebase): salvar sala
+    showAppSnackBar(context, 'Sala salva!');
+    context.pop();
   }
 
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.id == null ? 'Nova sala' : 'Editar sala'),
-      ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
+    return FormScaffold(
+      title: widget.id == null ? 'Nova sala' : 'Editar sala', 
+      formKey: _formKey, 
+      primaryLabel: 'Salvar sala', 
+      primaryIcon: Icons.check,
+      onPrimary: _salvar,
+      children: [
+        FormSection(
+          title: 'Buscar no TMDB',
+          icon: Icons.travel_explore,
+          child: AppSearchBar(
+            controller: _buscaCtrl,
+            hint: 'Digite o título do filme',
+            onSearch: () {}, // lógica virá depois
+          ),
+        ),
+        FormSection(
+          title: 'Informações do filme',
+          icon: Icons.movie_outlined,
+          child: Column(
+            spacing: 16,
             children: [
-              FormSection(
-                title: 'Identificação',
-                icon: Icons.meeting_room_outlined,
-                child: Column(
-                  spacing: 16,
-                  children: [
-                    AppTextField(
-                      controller: _nomeCtrl,
-                      label: 'Nome da sala',
-                      hint: 'Ex.: Sala 1',
-                      prefixIcon: Icons.badge_outlined,
-                      textInputAction: TextInputAction.next,
-                      validator: Validators.obrigatorio(
-                        'Informe o nome da sala',
-                      ),
-                    ),
-                    AppDropdownField<String>(
-                      label: 'Tipo de sala',
-                      prefixIcon: Icons.theaters_outlined,
-                      items: _tipos,
-                      value: _tipo,
-                      itemLabel: (t) => t,
-                      onChanged: (v) => setState(() => _tipo = v),
-                      validator: (v) => v == null ? 'Selecione o tipo' : null,
-                    ),
-                  ],
-                ),
+              const PosterPreview(imageUrl: null, width: 140),
+              AppTextField(
+                controller: _tituloCtrl,
+                label: 'Título',
+                prefixIcon: Icons.title,
+                textInputAction: TextInputAction.next,
+                validator: Validators.obrigatorio('Informe o título'),
               ),
-              const SizedBox(height: 16),
-              FormSection(
-                title: 'Capacidade',
-                icon: Icons.event_seat_outlined,
-                child: AppTextField(
-                  controller: _capacidadeCtrl,
-                  label: 'Quantidade de assentos',
-                  prefixIcon: Icons.event_seat_outlined,
-                  suffixText: 'assentos',
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.done,
-                  validator: Validators.inteiroPositivo,
-                ),
+              AppTextField(
+                controller: _sinopseCtrl,
+                label: 'Sinopse',
+                prefixIcon: Icons.notes,
+                maxLines: 4,
+                keyboardType: TextInputType.multiline,
               ),
-              const SizedBox(height: 16),
-              FormSection(
-                title: 'Características',
-                icon: Icons.tune,
-                child: Column(
-                  children: [
-                    AppSwitchTile(
-                      icon: Icons.accessible,
-                      title: 'Sala acessível',
-                      subtitle: 'Espaço para cadeirantes e mobilidade reduzida',
-                      value: _acessivel,
-                      onChanged: (v) => setState(() => _acessivel = v),
-                    ),
-                    AppSwitchTile(
-                      icon: Icons.power_settings_new,
-                      title: 'Sala ativa',
-                      subtitle: 'Disponível para receber novas sessões',
-                      value: _ativa,
-                      onChanged: (v) => setState(() => _ativa = v),
-                    ),
-                  ],
-                ),
+              AppTextField(
+                controller: _duracaoCtrl,
+                label: 'Duração',
+                prefixIcon: Icons.schedule,
+                suffixText: 'min',
+                keyboardType: TextInputType.number,
+                validator: Validators.inteiroPositivo, // 👈 Simplificado para usar a referência direta
+              ),
+              AppDropdownField<String>(
+                label: 'Gênero',
+                prefixIcon: Icons.category_outlined,
+                items: AppOptions.generos,
+                value: _genero,
+                itemLabel: (g) => g,
+                onChanged: (v) => setState(() => _genero = v),
+                validator: (v) => v == null ? 'Selecione um gênero' : null,
+              ),
+              ChoiceChipGroup(
+                label: 'Classificação indicativa',
+                options: AppOptions.classificacoes,
+                selected: _classificacao,
+                onSelected: (v) => setState(() => _classificacao), 
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: FormActionBar(
-        primaryLabel: 'Salvar sala',
-        primaryIcon: Icons.check,
-        onPrimary: _salvar,
-        secondaryLabel: 'Cancelar',
-        onSecondary: () => Navigator.of(context).maybePop(),
-      ),
+      ], 
     );
+
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text(widget.id == null ? 'Nova sala' : 'Editar sala'),
+    //   ),
+    //   body: SafeArea(
+    //     child: Form(
+    //       key: _formKey,
+    //       child: ListView(
+    //         padding: const EdgeInsets.all(16),
+    //         children: [
+    //           FormSection(
+    //             title: 'Identificação',
+    //             icon: Icons.meeting_room_outlined,
+    //             child: Column(
+    //               spacing: 16,
+    //               children: [
+    //                 AppTextField(
+    //                   controller: _nomeCtrl,
+    //                   label: 'Nome da sala',
+    //                   hint: 'Ex.: Sala 1',
+    //                   prefixIcon: Icons.badge_outlined,
+    //                   textInputAction: TextInputAction.next,
+    //                   validator: Validators.obrigatorio(
+    //                     'Informe o nome da sala',
+    //                   ),
+    //                 ),
+    //                 AppDropdownField<String>(
+    //                   label: 'Tipo de sala',
+    //                   prefixIcon: Icons.theaters_outlined,
+    //                   items: _tipos,
+    //                   value: _tipo,
+    //                   itemLabel: (t) => t,
+    //                   onChanged: (v) => setState(() => _tipo = v),
+    //                   validator: (v) => v == null ? 'Selecione o tipo' : null,
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //           const SizedBox(height: 16),
+    //           FormSection(
+    //             title: 'Capacidade',
+    //             icon: Icons.event_seat_outlined,
+    //             child: AppTextField(
+    //               controller: _capacidadeCtrl,
+    //               label: 'Quantidade de assentos',
+    //               prefixIcon: Icons.event_seat_outlined,
+    //               suffixText: 'assentos',
+    //               keyboardType: TextInputType.number,
+    //               textInputAction: TextInputAction.done,
+    //               validator: Validators.inteiroPositivo,
+    //             ),
+    //           ),
+    //           const SizedBox(height: 16),
+    //           FormSection(
+    //             title: 'Características',
+    //             icon: Icons.tune,
+    //             child: Column(
+    //               children: [
+    //                 AppSwitchTile(
+    //                   icon: Icons.accessible,
+    //                   title: 'Sala acessível',
+    //                   subtitle: 'Espaço para cadeirantes e mobilidade reduzida',
+    //                   value: _acessivel,
+    //                   onChanged: (v) => setState(() => _acessivel = v),
+    //                 ),
+    //                 AppSwitchTile(
+    //                   icon: Icons.power_settings_new,
+    //                   title: 'Sala ativa',
+    //                   subtitle: 'Disponível para receber novas sessões',
+    //                   value: _ativa,
+    //                   onChanged: (v) => setState(() => _ativa = v),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    //   bottomNavigationBar: FormActionBar(
+    //     primaryLabel: 'Salvar sala',
+    //     primaryIcon: Icons.check,
+    //     onPrimary: _salvar,
+    //     secondaryLabel: 'Cancelar',
+    //     onSecondary: () => Navigator.of(context).maybePop(),
+    //   ),
+    // );
   }
 }

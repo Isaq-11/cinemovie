@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../utils/validators.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_routes.dart';
 import '../../widgets/widgets.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -20,10 +21,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _enviar() {
     if (!_formKey.currentState!.validate()) return;
-    // TODO: enviar e-mail de recuperação
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link de recuperação enviado.')),
-    );
+    // TODO (Firebase): sendPasswordResetEmail
+    showAppSnackBar(context, 'Link de recuperação enviado.');
+    context.go(AppRoutes.login);
   }
 
   @override
@@ -39,14 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Column(
           spacing: 16,
           children: [
-            AppTextField(
-              controller: _emailCtrl,
-              label: 'E-mail',
-              prefixIcon: Icons.mail_outline,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.done,
-              validator: Validators.email,
-            ),
+            EmailField(controller: _emailCtrl),
             AppButton(
               label: 'Enviar link',
               icon: Icons.send,

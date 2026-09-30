@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_routes.dart';
 import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
 
@@ -20,60 +22,44 @@ class MoviesScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child:
-                mockFilmes
-                    .isEmpty // troque por [] para ver o EmptyState
-                ? EmptyState(
-                    icon: Icons.movie_outlined,
-                    title: 'Nenhum filme cadastrado',
-                    message: 'Cadastre seu primeiro filme para criar sessões.',
-                    actionLabel: 'Cadastrar filme',
-                    onAction: () {},
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
-                    itemCount: mockFilmes.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, i) {
-                      final f = mockFilmes[i];
-                      return InfoCard(
-                        title: f.titulo,
-                        subtitle: '${f.duracao} min',
-                        leading: PosterPreview(imageUrl: f.poster, width: 64),
-                        chips: [
-                          InfoChip(
-                            label: f.genero,
-                            icon: Icons.category_outlined,
-                          ),
-                          InfoChip(
-                            label: 'Class. ${f.classificacao}',
-                            icon: Icons.shield_outlined,
-                          ),
-                        ],
-                        trailing: ItemActionsMenu(
-                          onEdit: () {},
-                          onDelete: () async {
-                            final ok = await showConfirmDialog(
-                              context,
-                              title: 'Excluir filme?',
-                              message:
-                                  '"${f.titulo}" será removido do catálogo.',
-                              confirmLabel: 'Excluir',
-                              isDestructive: true,
-                            );
-                            if (ok && context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Filme excluído.'),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        onTap: () {},
-                      );
+            child: ItemList<FilmeMock>(
+              items: mockFilmes, 
+              empty: EmptyState(
+                icon: Icons.movie_outlined, 
+                title: 'Nenhum filme cadastrado', 
+                message: 'Cadastre seu primeiro filme para criar sessões.',
+                actionLabel: 'Cadastrar filme',
+                onAction: () => context.push(AppRoutes.movieNew),
+                ),
+              itemBuilder: (context, f, i) {
+                return InfoCard(
+                  title: f.titulo,
+                  subtitle: '${f.duracao} min',
+                  leading: PosterPreview(
+                    imageUrl: f.poster, 
+                    width: 64,
+                  ),
+                  chips: [
+                    InfoChip(
+                      label: f.genero,
+                      icon: Icons.category_outlined,
+                    ),
+                    InfoChip(
+                      label: 'Class. ${f.classificacao}',
+                      icon: Icons.shield_outlined,
+                    ),                  
+                  ],
+                  trailing: ItemActionsMenu(
+                    onEdit: () => context.push(AppRoutes.movieEdit('$i')), 
+                    onDelete: () async {
+                      final ok = await confirmDelete(context, itemName: f.titulo);
+                      if (ok && context.mounted) showAppSnackBar(context, 'Filme excluído.');
                     },
                   ),
+                  onTap: () => context.push(AppRoutes.movieEdit('$i')),
+                );
+              }
+            ),
           ),
         ],
       ),

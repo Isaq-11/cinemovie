@@ -12,6 +12,7 @@ export 'confirm_dialog.dart';
 export 'email_field.dart';
 export 'empty_state.dart';
 export 'form_action_bar.dart';
+export 'form_scaffold.dart';
 export 'form_section.dart';
 export 'info_card.dart';
 export 'info_chip.dart';
