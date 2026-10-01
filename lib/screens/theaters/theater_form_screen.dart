@@ -1,8 +1,8 @@
-import 'package:cine_movie/constants/app_options.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../utils/validators.dart';
 import '../../widgets/widgets.dart';
+import '../../constants/app_options.dart';
 
 class TheaterFormScreen extends StatefulWidget {
   const TheaterFormScreen({super.key, this.id});
@@ -78,7 +78,6 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 16),
         FormSection(
           title: 'Características',
           icon: Icons.tune,

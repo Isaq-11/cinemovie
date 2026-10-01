@@ -34,15 +34,10 @@ class _LoginScreenState extends State<LoginScreen> {
       icon: Icons.local_movies_outlined,
       title: 'CineMovie',
       subtitle: 'Entre para gerenciar seu cinema',
-      footer: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AuthFooterLink(
-            text: 'Ainda não tem conta?',
-            actionLabel: 'Cadastre-se',
-            onPressed: () => context.push(AppRoutes.register),
-          ),
-        ],
+      footer: AuthFooterLink(
+        text: 'Ainda não tem conta?',
+        actionLabel: 'Cadastre-se',
+        onPressed: () => context.push(AppRoutes.register),
       ),
       child: Form(
         key: _formKey,
@@ -54,6 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
             Align(
               alignment: Alignment.centerRight,
               child: AppButton(
+                variant: AppButtonVariant.text,
+                expanded: false,
                 label: 'Esqueci minha senha',
                 onPressed: () => context.push(AppRoutes.forgotPassword),
               ),

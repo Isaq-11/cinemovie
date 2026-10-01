@@ -47,21 +47,17 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 actionLabel: 'Nova sessão',
                 onAction: () => context.push(AppRoutes.sessionNew),
               ),
-              itemBuilder: (context, s, i) {
-                final indiceOriginal = mockSessoes.indexOf(s);
-                return InfoCard(
-                  title: s.filme,
-                  subtitle: '${s.data} às ${s.horario}',
-                  leading: PosterPreview(imageUrl: s.poster, width: 64),
-                  chips: [
-                    InfoChip(label: s.sala, icon: Icons.meeting_room_outlined),
-                    InfoChip(label: s.formato, icon: Icons.theaters_outlined),
-                    InfoChip(
-                      label:
-                          '${s.vendidos}/${s.capacidade} vendidos', // Ocupação da sala
-                      icon: Icons.confirmation_number_outlined,
-                    ),
-                  ],
+              itemBuilder: (context, s, _) {
+                final i = mockSessoes.indexOf(s);
+                return SessionCard(
+                  filmeTitulo: s.filme,
+                  posterUrl: s.poster,
+                  sala: s.sala,
+                  data: s.data,
+                  horario: s.horario,
+                  formato: s.formato,
+                  vendidos: s.vendidos,
+                  capacidade: s.capacidade,
                   trailing: ItemActionsMenu(
                     onEdit: () => context.push(AppRoutes.sessionEdit('$i')),
                     onDelete: () async {
@@ -69,12 +65,12 @@ class _SessionsScreenState extends State<SessionsScreen> {
                         context,
                         itemName: 'Sessão de ${s.filme}',
                       );
-                      if (ok && context.mounted)
+                      if (ok && context.mounted) {
                         showAppSnackBar(context, 'Sessão excluída.');
+                      }
                     },
                   ),
-                  onTap: () =>
-                      context.push(AppRoutes.sessionDetail('$indiceOriginal')),
+                  onTap: () => context.push(AppRoutes.sessionDetail('$i')),
                 );
               },
             ),

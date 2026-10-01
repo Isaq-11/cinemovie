@@ -1,9 +1,10 @@
-import 'package:cine_movie/constants/app_options.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/widgets.dart';
 import '../../utils/formatters.dart';
 import '../../utils/validators.dart';
+import '../../constants/app_options.dart';
+import '../../mocks/mock_data.dart';
 
 class SessionFormScreen extends StatefulWidget {
   const SessionFormScreen({super.key, this.id});
@@ -17,38 +18,21 @@ class SessionFormScreen extends StatefulWidget {
 class _SessionFormScreenState extends State<SessionFormScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _filmeBuscaCtrl = TextEditingController();
   final _precoCtrl = TextEditingController();
-  final _dataCtrl = TextEditingController();
-  final _horarioCtrl = TextEditingController();
 
-  String? _filmeId;
-  String? _filmeTitulo;
-  String? _filmePosterUrl;
+  FilmeMock? _filme;
+  SalaMock? _sala;
 
-  String? _sala;
   String? _idioma = 'Dublado';
   String? _formato = '2D';
 
   DateTime? _data;
   TimeOfDay? _horario;
 
-  static const _salas = ['Sala 1', 'Sala 2', 'Sala 3', 'Sala 4', 'Sala 5'];
-
   @override
   void dispose() {
-    _filmeBuscaCtrl.dispose();
     _precoCtrl.dispose();
-    _dataCtrl.dispose();
-    _horarioCtrl.dispose();
     super.dispose();
-  }
-
-  String? _validarFilme(String? _) {
-    if (_filmeId == null) {
-      return 'Selecione um filme';
-    }
-    return null;
   }
 
   Future<void> _selecionarData() async {
@@ -67,7 +51,6 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
 
     setState(() {
       _data = selecionada;
-      _dataCtrl.text = Formatters.data(selecionada);
     });
   }
 
@@ -83,35 +66,6 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
 
     setState(() {
       _horario = selecionado;
-      _horarioCtrl.text = selecionado.format(context);
-    });
-  }
-
-  void _buscarFilme() {
-    final busca = _filmeBuscaCtrl.text.trim();
-
-    if (busca.isEmpty) {
-      return;
-    }
-
-    // TODO:
-    // Buscar filmes na API/TMDB.
-    //
-    // Depois que o usuário escolher um filme:
-    //
-    // setState(() {
-    //   _filmeId = filme.id;
-    //   _filmeTitulo = filme.titulo;
-    //   _filmePosterUrl = filme.posterUrl;
-    // });
-  }
-
-  void _removerFilme() {
-    setState(() {
-      _filmeId = null;
-      _filmeTitulo = null;
-      _filmePosterUrl = null;
-      _filmeBuscaCtrl.clear();
     });
   }
 
@@ -135,109 +89,69 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
           title: 'Filme',
           icon: Icons.movie_outlined,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16,
             children: [
-              AppSearchBar(
-                controller: _filmeBuscaCtrl,
-                hint: 'Buscar filme...',
-                onSearch: _buscarFilme,
+              AppDropdownField<FilmeMock>(
+                label: 'Filme',
+                prefixIcon: Icons.movie_outlined,
+                items: mockFilmes,
+                value: _filme,
+                itemLabel: (f) => f.titulo,
+                onChanged: (f) => setState(() => _filme = f),
+                validator: (f) => f == null ? 'Selecione um filme' : null,
               ),
-              if (_filmeId != null) ...[
+              if (_filme != null)
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PosterPreview(imageUrl: _filmePosterUrl, width: 90),
+                    PosterPreview(imageUrl: _filme!.poster, width: 60),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _filmeTitulo ?? '',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          TextButton.icon(
-                            onPressed: _removerFilme,
-                            icon: const Icon(Icons.close),
-                            label: const Text('Trocar filme'),
-                          ),
-                        ],
-                      ),
+                      child: Text('${_filme!.duracao} min • ${_filme!.genero}'),
                     ),
                   ],
                 ),
-              ],
-              FormField<String>(
-                validator: _validarFilme,
-                builder: (field) {
-                  return field.hasError
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: Text(
-                            field.errorText!,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                },
-              ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
         FormSection(
           title: 'Exibição',
           icon: Icons.theaters_outlined,
           child: Column(
             spacing: 16,
             children: [
-              AppDropdownField<String>(
+              AppDropdownField<SalaMock>(
                 label: 'Sala',
                 prefixIcon: Icons.meeting_room_outlined,
-                items: _salas,
+                items: mockSalas.where((s) => s.ativa).toList(),
                 value: _sala,
-                itemLabel: (s) => s,
-                onChanged: (v) => setState(() => _sala = v),
-                validator: (v) => v == null ? 'Selecione a sala' : null,
+                itemLabel: (s) => '${s.nome} • ${s.tipo}',
+                onChanged: (s) => setState(() => _sala = s),
+                validator: (s) => s == null ? 'Selecione a sala' : null,
               ),
               Row(
                 spacing: 16,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // erros de alturas diferentes
                 children: [
                   Expanded(
-                    child: AppTextField(
-                      controller: TextEditingController(
-                        text: _data == null ? '' : Formatters.data(_data!),
-                      ),
+                    child: AppPickerField(
                       label: 'Data',
-                      prefixIcon: Icons.calendar_today_outlined,
-                      hint: 'Selecione...',
-                      enabled: true,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.arrow_drop_down),
-                        onPressed: _selecionarData,
-                      ),
+                      hint: 'Selecione',
+                      icon: Icons.calendar_today_outlined,
+                      valueText: _data == null ? null : Formatters.data(_data!),
+                      onTap: _selecionarData,
                       validator: (_) => _data == null ? 'Informe a data' : null,
                     ),
                   ),
                   Expanded(
-                    child: AppTextField(
-                      controller: TextEditingController(
-                        text: _horario == null ? '' : _horario!.format(context),
-                      ),
+                    child: AppPickerField(
                       label: 'Horário',
-                      prefixIcon: Icons.schedule,
-                      hint: 'Selecione...',
-                      enabled: true,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.arrow_drop_down),
-                        onPressed: _selecionarHorario,
-                      ),
+                      hint: 'Selecione',
+                      icon: Icons.schedule,
+                      valueText: _horario == null
+                          ? null
+                          : Formatters.horario(_horario!),
+                      onTap: _selecionarHorario,
                       validator: (_) =>
                           _horario == null ? 'Informe o horário' : null,
                     ),
@@ -255,13 +169,13 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
               ChoiceChipGroup(
                 label: 'Idioma',
                 options: AppOptions.idiomas,
-                selected: _idioma ?? 'Dublado',
+                selected: _idioma,
                 onSelected: (v) => setState(() => _idioma = v),
               ),
               ChoiceChipGroup(
                 label: 'Formato de exibição',
                 options: AppOptions.formatos,
-                selected: _formato ?? '2D',
+                selected: _formato,
                 onSelected: (v) => setState(() => _formato = v),
               ),
             ],

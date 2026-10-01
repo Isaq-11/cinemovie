@@ -1,6 +1,6 @@
+import 'package:cine_movie/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import '../utils/validators.dart';
-import '../widgets/widgets.dart';
 
 class PasswordField extends StatefulWidget {
   const PasswordField({

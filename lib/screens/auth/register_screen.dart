@@ -32,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _criarConta() {
     if (!_formKey.currentState!.validate()) return;
     // TODO (Firebase): criar usuário
-    context.go(AppRoutes.home);
+    context.go(AppRoutes.login);
   }
 
   @override
@@ -42,15 +42,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       icon: Icons.person_add_alt_1_outlined,
       title: 'Criar conta',
       subtitle: 'Cadastre-se como proprietário do cinema',
-      footer: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AuthFooterLink(
-            text: 'Já tem conta?',
-            actionLabel: 'Entrar',
-            onPressed: () => context.go(AppRoutes.login),
-          ),
-        ],
+      footer: AuthFooterLink(
+        text: 'Já tem conta?',
+        actionLabel: 'Entrar',
+        onPressed: () => context.go(AppRoutes.login),
       ),
       child: Form(
         key: _formKey,

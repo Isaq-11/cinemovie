@@ -99,7 +99,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
                 label: 'Classificação indicativa',
                 options: AppOptions.classificacoes,
                 selected: _classificacao,
-                onSelected: (v) => setState(() => _classificacao),
+                onSelected: (v) => setState(() => _classificacao = v),
               ),
             ],
           ),

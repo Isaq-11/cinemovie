@@ -1,5 +1,5 @@
+import 'package:cine_movie/widgets/form_action_bar.dart';
 import 'package:flutter/material.dart';
-import '../widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class FormScaffold extends StatelessWidget {
@@ -33,11 +33,10 @@ class FormScaffold extends StatelessWidget {
       body: SafeArea(
         child: Form(
           key: formKey,
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-            itemCount: children.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (context, index) => children[index],
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.all(16),
+            child: Column(spacing: 16, children: children),
           ),
         ),
       ),
@@ -46,7 +45,7 @@ class FormScaffold extends StatelessWidget {
         onPrimary: onPrimary,
         primaryIcon: primaryIcon,
         secondaryLabel: secondaryLabel,
-        onSecondary: onSecondary ?? context.pop,
+        onSecondary: onSecondary ?? () => context.pop(),
         isLoading: isLoading,
       ),
     );

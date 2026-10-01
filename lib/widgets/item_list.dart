@@ -23,7 +23,7 @@ class ItemList<T> extends StatelessWidget {
     return ListView.separated(
       padding: padding,
       itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         return itemBuilder(context, items[index], index);
       },

@@ -17,6 +17,7 @@ class SessionCard extends StatelessWidget {
     this.data,
     this.formato,
     this.onTap,
+    this.trailing,
   });
 
   final String filmeTitulo;
@@ -28,6 +29,7 @@ class SessionCard extends StatelessWidget {
   final String? data;
   final String? formato;
   final VoidCallback? onTap;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,5 @@
+import 'package:cine_movie/widgets/app_button.dart';
 import 'package:flutter/material.dart';
-import '../widgets/widgets.dart';
 
 class AuthFooterLink extends StatelessWidget {
   const AuthFooterLink({
