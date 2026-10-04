@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../router/app_routes.dart';
 import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
+import '../../services/auth_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,11 +26,19 @@ class HomeScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            'Olá, Fulano!',
-            style: tema.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          StreamBuilder(
+            stream: AuthService.instance.userChanges,
+            initialData: AuthService.instance.currentUser,
+            builder: (context, snap) {
+              final primeiro = snap.data?.displayName?.split(' ').first ?? '';
+
+              return Text(
+                primeiro.isEmpty ? 'Olá!' : 'Olá, $primeiro!',
+                style: tema.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            },
           ),
           Text(
             'Resumo do seu cinema',

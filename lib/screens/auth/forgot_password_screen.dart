@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../router/app_routes.dart';
 import '../../widgets/widgets.dart';
+import '../../services/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -13,17 +14,30 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
 
+  bool _carregando = false;
+
   @override
   void dispose() {
     _emailCtrl.dispose();
     super.dispose();
   }
 
-  void _enviar() {
+  Future<void> _enviar() async {
     if (!_formKey.currentState!.validate()) return;
-    // TODO (Firebase): sendPasswordResetEmail
-    showAppSnackBar(context, 'Link de recuperação enviado.');
-    context.go(AppRoutes.login);
+    setState(() => _carregando = true);
+    try {
+      await AuthService.instance.resetPassword(_emailCtrl.text);
+      if (!mounted) return;
+      showAppSnackBar(
+        context,
+        'Se o e-mail estiver cadastrado, enviaremos o link de recuperação.',
+      );
+      context.go(AppRoutes.login);
+    } on AuthException catch (e) {
+      if (mounted) showAppSnackBar(context, e.message, isError: true);
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
   @override
@@ -44,6 +58,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               label: 'Enviar link',
               icon: Icons.send,
               onPressed: _enviar,
+              isLoading: _carregando,
             ),
           ],
         ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/widgets.dart';
 import '../../utils/validators.dart';
 import '../../router/app_routes.dart';
+import '../../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -29,10 +30,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _criarConta() {
+  Future<void> _criarConta() async {
     if (!_formKey.currentState!.validate()) return;
-    // TODO (Firebase): criar usuário
-    context.go(AppRoutes.login);
+    setState(() => _carregando = true);
+    try {
+      await AuthService.instance.register(
+        nome: _nomeCtrl.text.trim(),
+        cinema: _cinemaCtrl.text.trim(),
+        email: _emailCtrl.text,
+        senha: _senhaCtrl.text,
+      );
+    } on AuthException catch (e) {
+      if (mounted) showAppSnackBar(context, e.message, isError: true);
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
   @override

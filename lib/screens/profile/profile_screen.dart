@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../router/app_routes.dart';
 import '../../widgets/widgets.dart';
+import '../../services/auth_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -13,9 +12,9 @@ class ProfileScreen extends StatelessWidget {
       message: 'Você precisará entrar novamente.',
       confirmLabel: 'Sair',
     );
+
     if (ok && context.mounted) {
-      // TODO (Firebase): signOut
-      context.go(AppRoutes.login);
+      await AuthService.instance.logout();
     }
   }
 
@@ -28,40 +27,59 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Center(
-            child: CircleAvatar(
-              radius: 44,
-              backgroundColor: cores.primaryContainer,
-              child: Text(
-                'F',
-                style: TextStyle(fontSize: 32, color: cores.onPrimaryContainer),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          const FormSection(
-            title: 'Conta',
-            icon: Icons.person_outline,
-            child: Column(
-              spacing: 12,
-              children: [
-                InfoRow(
-                  icon: Icons.badge_outlined,
-                  label: 'Nome',
-                  value: 'Fulano de Tal',
-                ),
-                InfoRow(
-                  icon: Icons.storefront_outlined,
-                  label: 'Cinema',
-                  value: 'Cine Exemplo',
-                ),
-                InfoRow(
-                  icon: Icons.mail_outline,
-                  label: 'E-mail',
-                  value: 'fulano@email.com',
-                ),
-              ],
-            ),
+          StreamBuilder(
+            stream: AuthService.instance.userChanges,
+            initialData: AuthService.instance.currentUser,
+            builder: (context, snap) {
+              final user = snap.data;
+              final nome = user?.displayName ?? '—';
+              final inicial = nome.isNotEmpty && nome != '—'
+                  ? nome[0].toUpperCase()
+                  : '?';
+
+              return Column(
+                children: [
+                  Center(
+                    child: CircleAvatar(
+                      radius: 44,
+                      backgroundColor: cores.primaryContainer,
+                      child: Text(
+                        inicial,
+                        style: TextStyle(
+                          fontSize: 32,
+                          color: cores.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FormSection(
+                    title: 'Conta',
+                    icon: Icons.person_outline,
+                    child: Column(
+                      spacing: 12,
+                      children: [
+                        InfoRow(
+                          icon: Icons.badge_outlined,
+                          label: 'Nome',
+                          value: nome,
+                        ),
+                        InfoRow(
+                          icon: Icons.storefront_outlined,
+                          label: 'Cinema',
+                          value: 'Cine Exemplo',
+                        ),
+                        InfoRow(
+                          icon: Icons.mail_outline,
+                          label: 'E-mail',
+                          value: user?.email ?? '—',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
           AppButton(

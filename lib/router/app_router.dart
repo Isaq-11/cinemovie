@@ -14,10 +14,24 @@ import '../screens/theaters/theater_form_screen.dart';
 import '../screens/theaters/theaters_screen.dart';
 import 'app_routes.dart';
 import 'app_shell.dart';
+import 'auth_notifier.dart';
+
+final _authNotifier = AuthNotifier();
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.login,
-  // TODO (Firebase): redirect + refreshListenable para proteger as rotas
+  refreshListenable: _authNotifier,
+  redirect: (context, state) {
+    final logado = _authNotifier.isLoggedIn;
+    final loc = state.matchedLocation;
+    final naAuth = loc == AppRoutes.login ||
+        loc == AppRoutes.register ||
+        loc == AppRoutes.forgotPassword;
+
+    if (!logado && !naAuth) return AppRoutes.login; // deslogado: só telas de auth
+    if (logado && naAuth) return AppRoutes.home;    // logado: sai das telas de auth
+    return null;
+  },
   routes: [
     // ---- Autenticação ----
     GoRoute(path: AppRoutes.login, builder: (_, _) => const LoginScreen()),

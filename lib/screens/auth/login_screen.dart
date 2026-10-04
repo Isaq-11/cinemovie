@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/widgets.dart';
 import '../../router/app_routes.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,10 +23,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _entrar() {
+  Future<void> _entrar() async {
     if (!_formKey.currentState!.validate()) return;
-    // TODO (Firebase): autenticar
-    context.go(AppRoutes.home);
+    setState(() => _carregando = true);
+    try {
+      await AuthService.instance.login(_emailCtrl.text, _senhaCtrl.text);
+      // o redirect do router leva para a Home
+    } on AuthException catch (e) {
+      if (mounted) showAppSnackBar(context, e.message, isError: true);
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
   @override

@@ -9,6 +9,7 @@ export 'auth_footer_link.dart';
 export 'auth_scaffold.dart';
 export 'choice_chip_group.dart';
 export 'confirm_dialog.dart';
+export 'data_stream.dart';
 export 'email_field.dart';
 export 'empty_state.dart';
 export 'form_action_bar.dart';

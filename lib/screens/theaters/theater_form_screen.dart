@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../utils/validators.dart';
+import '../../models/sala.dart';
+import '../../services/repositories.dart';
 import '../../widgets/widgets.dart';
 import '../../constants/app_options.dart';
 
@@ -21,6 +23,18 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
   bool _acessivel = true;
   bool _ativa = true;
 
+  bool _carregandoDados = false;
+  bool _salvando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.id != null) {
+      _carregandoDados = true;
+      _carregar();
+    }
+  }
+
   @override
   void dispose() {
     _nomeCtrl.dispose();
@@ -28,20 +42,65 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
     super.dispose();
   }
 
-  void _salvar() {
+  Future<void> _carregar() async {
+    final s = await SalaRepository.instance.getById(widget.id!);
+    if (!mounted) return;
+    if (s == null) {
+      showAppSnackBar(context, 'Sala não encontrada.', isError: true);
+      context.pop();
+      return;
+    }
+    setState(() {
+      _nomeCtrl.text = s.nome;
+      _capacidadeCtrl.text = '${s.capacidade}';
+      _tipo = s.tipo;
+      _acessivel = s.acessivel;
+      _ativa = s.ativa;
+      _carregandoDados = false;
+    });
+  }
+
+  Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
-    // TODO (Firebase): salvar sala
-    showAppSnackBar(context, 'Sala salva!');
-    context.pop();
+    setState(() => _salvando = true);
+    try {
+      await SalaRepository.instance.save(
+        Sala(
+          nome: _nomeCtrl.text.trim(),
+          tipo: _tipo!,
+          capacidade: int.parse(_capacidadeCtrl.text),
+          acessivel: _acessivel,
+          ativa: _ativa,
+        ),
+        id: widget.id,
+      );
+      if (!mounted) return;
+      showAppSnackBar(context, 'Sala salva!');
+      context.pop();
+    } catch (e) {
+      debugPrint('Erro ao salvar sala: $e');
+      if (mounted) showAppSnackBar(context, 'Erro ao salvar. Tente novamente.', isError: true);
+    } finally {
+      if (mounted) setState(() => _salvando = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    if (_carregandoDados) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return FormScaffold(
       title: widget.id == null ? 'Nova sala' : 'Editar sala',
       formKey: _formKey,
       primaryLabel: 'Salvar sala',
       primaryIcon: Icons.check,
+      isLoading: _salvando,
       onPrimary: _salvar,
       children: [
         FormSection(
