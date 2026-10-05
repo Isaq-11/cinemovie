@@ -67,6 +67,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                     data: s.data,
                     horario: s.horario,
                     formato: s.formato,
+                    idioma: s.idioma,
                     vendidos: s.vendidos,
                     capacidade: s.capacidade,
                     trailing: ItemActionsMenu(
