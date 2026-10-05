@@ -12,6 +12,7 @@ class Sessao {
     required this.salaId,
     required this.sala,
     required this.capacidade,
+    required this.duracao,
     required this.inicio,
     required this.formato,
     required this.idioma,
@@ -21,11 +22,12 @@ class Sessao {
 
   final String id;
   final String filmeId;
-  final String filme; // título (copiado do filme)
+  final String filme;
   final String? poster;
   final String salaId;
-  final String sala; // nome (copiado da sala)
+  final String sala;
   final int capacidade;
+  final int duracao;
   final DateTime inicio;
   final String formato;
   final String idioma;
@@ -52,6 +54,7 @@ class Sessao {
     salaId: m['salaId'] ?? '',
     sala: m['sala'] ?? '',
     capacidade: (m['capacidade'] ?? 0) as int,
+    duracao: (m['duracao'] ?? 0) as int,
     inicio: (m['inicio'] as Timestamp).toDate(),
     formato: m['formato'] ?? '2D',
     idioma: m['idioma'] ?? 'Dublado',
@@ -66,6 +69,7 @@ class Sessao {
     'salaId': salaId,
     'sala': sala,
     'capacidade': capacidade,
+    'duracao': duracao,
     'inicio': Timestamp.fromDate(inicio),
     'formato': formato,
     'idioma': idioma,

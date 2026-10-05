@@ -184,6 +184,7 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
           salaId: _sala!.id,
           sala: _sala!.nome,
           capacidade: _sala!.capacidade,
+          duracao: _filme!.duracao,
           inicio: DateTime(d.year, d.month, d.day, h.hour, h.minute),
           formato: _formato ?? '2D',
           idioma: _idioma ?? 'Dublado',

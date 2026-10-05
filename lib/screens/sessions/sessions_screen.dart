@@ -70,6 +70,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                     idioma: s.idioma,
                     vendidos: s.vendidos,
                     capacidade: s.capacidade,
+                    duracao: s.duracao,
                     trailing: ItemActionsMenu(
                       onEdit: () => context.push(AppRoutes.sessionEdit(s.id)),
                       onDelete: () => _excluir(s),

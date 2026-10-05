@@ -13,6 +13,7 @@ class SessionCard extends StatelessWidget {
     required this.horario,
     required this.vendidos,
     required this.capacidade,
+    required this.duracao,
     this.posterUrl,
     this.data,
     this.formato,
@@ -26,6 +27,7 @@ class SessionCard extends StatelessWidget {
   final String horario;
   final int vendidos;
   final int capacidade;
+  final int duracao;
   final String? posterUrl;
   final String? data;
   final String? formato;
@@ -37,6 +39,7 @@ class SessionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final subtitle = [
       sala,
+      '$duracao min',
       if (data != null) '$data $horario',
       if (data == null) horario,
     ].join(' • ');
@@ -56,6 +59,8 @@ class SessionCard extends StatelessWidget {
       footer: OccupancyBar(current: vendidos, total: capacidade),
 
       onTap: onTap,
+
+      trailing: trailing,
     );
   }
 }

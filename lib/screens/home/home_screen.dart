@@ -124,6 +124,7 @@ class HomeScreen extends StatelessWidget {
                       idioma: s.idioma,
                       vendidos: s.vendidos,
                       capacidade: s.capacidade,
+                      duracao: s.duracao,
                       onTap: () => context.push(AppRoutes.sessionDetail(s.id)),
                     ),
                 ],
