@@ -20,15 +20,13 @@ class AuthService {
   bool get isLoggedIn => _auth.currentUser != null;
 
   Future<void> login(String email, String senha) => _run(
-    () => _auth.signInWithEmailAndPassword(
-      email: email.trim(),
-      password: senha,
-    ),
+    () =>
+        _auth.signInWithEmailAndPassword(email: email.trim(), password: senha),
   );
 
   Future<void> register({
     required String nome,
-    required String cinema, 
+    required String cinema,
     required String email,
     required String senha,
   }) => _run(() async {
@@ -61,7 +59,8 @@ class AuthService {
     'weak-password' => 'A senha é muito fraca. Use ao menos 6 caracteres.',
     'invalid-email' => 'E-mail inválido.',
     'user-disabled' => 'Esta conta foi desativada.',
-    'too-many-requests' => 'Muitas tentativas. Aguarde um pouco e tente de novo.',
+    'too-many-requests' =>
+      'Muitas tentativas. Aguarde um pouco e tente de novo.',
     'network-request-failed' => 'Sem conexão. Verifique sua internet.',
     _ => 'Não foi possível concluir. Tente novamente.',
   };

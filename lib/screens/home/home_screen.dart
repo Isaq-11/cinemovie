@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../router/app_routes.dart';
-import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
 import '../../services/auth_service.dart';
+import '../../services/repositories.dart';
+import '../../models/sessao.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -51,27 +52,39 @@ class HomeScreen extends StatelessWidget {
             spacing: 12,
             children: [
               Expanded(
-                child: StatCard(
-                  icon: Icons.movie_outlined,
-                  value: '${mockFilmes.length}',
-                  label: 'Filmes',
-                  onTap: () => context.go(AppRoutes.movies),
+                child: StreamBuilder<int>(
+                  stream: FilmeRepository.instance.watchCount(),
+                  initialData: 0,
+                  builder: (_, s) => StatCard(
+                    icon: Icons.movie_outlined,
+                    value: '${s.data}',
+                    label: 'Filmes',
+                    onTap: () => context.go(AppRoutes.movies),
+                  ),
                 ),
               ),
               Expanded(
-                child: StatCard(
-                  icon: Icons.meeting_room_outlined,
-                  value: '${mockSalas.length}',
-                  label: 'Salas',
-                  onTap: () => context.go(AppRoutes.theaters),
+                child: StreamBuilder<int>(
+                  stream: SalaRepository.instance.watchCount(),
+                  initialData: 0,
+                  builder: (_, s) => StatCard(
+                    icon: Icons.meeting_room_outlined,
+                    value: '${s.data}',
+                    label: 'Salas',
+                    onTap: () => context.go(AppRoutes.theaters),
+                  ),
                 ),
               ),
               Expanded(
-                child: StatCard(
-                  icon: Icons.event_outlined,
-                  value: '${mockSessoes.length}',
-                  label: 'Sessões',
-                  onTap: () => context.go(AppRoutes.sessions),
+                child: StreamBuilder<int>(
+                  stream: SessaoRepository.instance.watchCount(),
+                  initialData: 0,
+                  builder: (_, s) => StatCard(
+                    icon: Icons.event_outlined,
+                    value: '${s.data}',
+                    label: 'Sessões',
+                    onTap: () => context.go(AppRoutes.sessions),
+                  ),
                 ),
               ),
             ],
@@ -83,20 +96,39 @@ class HomeScreen extends StatelessWidget {
             onAction: () => context.go(AppRoutes.sessions),
           ),
           const SizedBox(height: 12),
-          for (final (i, s) in mockSessoes.take(3).indexed) ...[
-            SessionCard(
-              filmeTitulo: s.filme,
-              posterUrl: s.poster,
-              sala: s.sala,
-              data: s.data,
-              horario: s.horario,
-              formato: s.formato,
-              vendidos: s.vendidos,
-              capacidade: s.capacidade,
-              onTap: () => context.push(AppRoutes.sessionDetail('$i')),
-            ),
-            const SizedBox(height: 12),
-          ],
+          DataStream<List<Sessao>>(
+            stream: SessaoRepository.instance.watchAll(),
+            builder: (context, todas) {
+              final agora = DateTime.now();
+              final proximas = todas
+                  .where((s) => s.inicio.isAfter(agora))
+                  .take(3)
+                  .toList();
+              if (proximas.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: Text('Nenhuma sessão agendada.')),
+                );
+              }
+              return Column(
+                spacing: 12,
+                children: [
+                  for (final s in proximas)
+                    SessionCard(
+                      filmeTitulo: s.filme,
+                      posterUrl: s.poster,
+                      sala: s.sala,
+                      data: s.data,
+                      horario: s.horario,
+                      formato: s.formato,
+                      vendidos: s.vendidos,
+                      capacidade: s.capacidade,
+                      onTap: () => context.push(AppRoutes.sessionDetail(s.id)),
+                    ),
+                ],
+              );
+            },
+          ),
         ],
       ),
     );

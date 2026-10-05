@@ -79,7 +79,12 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
       context.pop();
     } catch (e) {
       debugPrint('Erro ao salvar sala: $e');
-      if (mounted) showAppSnackBar(context, 'Erro ao salvar. Tente novamente.', isError: true);
+      if (mounted)
+        showAppSnackBar(
+          context,
+          'Erro ao salvar. Tente novamente.',
+          isError: true,
+        );
     } finally {
       if (mounted) setState(() => _salvando = false);
     }
@@ -87,7 +92,6 @@ class _TheaterFormScreenState extends State<TheaterFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if (_carregandoDados) {
       return Scaffold(
         appBar: AppBar(),

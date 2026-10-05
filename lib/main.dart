@@ -6,8 +6,7 @@ import 'firebase_options.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 
-
-// usar este comando: 
+// usar este comando:
 // flutter run -d chrome --dart-define-from-file=env.json
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

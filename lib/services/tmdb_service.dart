@@ -25,26 +25,36 @@ class TmdbService {
 
   // ids de gênero do TMDB → nomes usados em AppOptions.generos
   static const _generos = {
-    28: 'Ação', 12: 'Aventura', 16: 'Animação', 35: 'Comédia',
-    99: 'Documentário', 18: 'Drama', 878: 'Ficção científica',
-    10749: 'Romance', 27: 'Terror',
+    28: 'Ação',
+    12: 'Aventura',
+    16: 'Animação',
+    35: 'Comédia',
+    99: 'Documentário',
+    18: 'Drama',
+    878: 'Ficção científica',
+    10749: 'Romance',
+    27: 'Terror',
   };
 
   static void _checarChave() {
     if (_key.isEmpty) {
-      throw Exception('TMDB_KEY ausente. Rode com --dart-define-from-file=env.json');
+      throw Exception(
+        'TMDB_KEY ausente. Rode com --dart-define-from-file=env.json',
+      );
     }
   }
 
   static Future<List<TmdbMovie>> buscar(String titulo) async {
     _checarChave();
     final res = await http
-        .get(Uri.https(_host, '/3/search/movie', {
-          'api_key': _key,
-          'query': titulo,
-          'language': 'pt-BR',
-          'include_adult': 'false',
-        }))
+        .get(
+          Uri.https(_host, '/3/search/movie', {
+            'api_key': _key,
+            'query': titulo,
+            'language': 'pt-BR',
+            'include_adult': 'false',
+          }),
+        )
         .timeout(const Duration(seconds: 10));
     if (res.statusCode != 200) throw Exception('TMDB: ${res.statusCode}');
 
@@ -68,10 +78,12 @@ class TmdbService {
   static Future<int?> duracao(int id) async {
     _checarChave();
     final res = await http
-        .get(Uri.https(_host, '/3/movie/$id', {
-          'api_key': _key,
-          'language': 'pt-BR',
-        }))
+        .get(
+          Uri.https(_host, '/3/movie/$id', {
+            'api_key': _key,
+            'language': 'pt-BR',
+          }),
+        )
         .timeout(const Duration(seconds: 10));
     if (res.statusCode != 200) return null;
     final runtime = jsonDecode(res.body)['runtime'];

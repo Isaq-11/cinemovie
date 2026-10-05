@@ -6,6 +6,7 @@ class ChoiceChipGroup extends StatelessWidget {
   final String? selected;
   final ValueChanged<String> onSelected;
   final Color? selectedColor;
+  final WrapAlignment? wrapAlignment;
 
   const ChoiceChipGroup({
     super.key,
@@ -14,6 +15,7 @@ class ChoiceChipGroup extends StatelessWidget {
     required this.onSelected,
     this.label,
     this.selectedColor,
+    this.wrapAlignment = WrapAlignment.start,
   });
 
   @override
@@ -25,19 +27,23 @@ class ChoiceChipGroup extends StatelessWidget {
           Text(label!, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
         ],
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: options.map((option) {
-            return ChoiceChip(
-              label: Text(option),
-              selected: selected == option,
-              selectedColor: selectedColor,
-              onSelected: (_) {
-                onSelected(option);
-              },
-            );
-          }).toList(),
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: wrapAlignment!,
+            spacing: 8,
+            runSpacing: 8,
+            children: options.map((option) {
+              return ChoiceChip(
+                label: Text(option),
+                selected: selected == option,
+                selectedColor: selectedColor,
+                onSelected: (_) {
+                  onSelected(option);
+                },
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

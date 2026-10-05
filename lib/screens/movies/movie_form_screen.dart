@@ -106,14 +106,18 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
     } catch (e) {
       debugPrint('Erro TMDB: $e');
       if (mounted) {
-        showAppSnackBar(context, 'Não foi possível buscar no TMDB.', isError: true);
+        showAppSnackBar(
+          context,
+          'Não foi possível buscar no TMDB.',
+          isError: true,
+        );
       }
     } finally {
       if (mounted) setState(() => _buscando = false);
     }
   }
 
-    Future<void> _salvar() async {
+  Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _salvando = true);
     try {
@@ -133,7 +137,12 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
       context.pop();
     } catch (e) {
       debugPrint('Erro ao salvar filme: $e');
-      if (mounted) showAppSnackBar(context, 'Erro ao salvar. Tente novamente.', isError: true);
+      if (mounted)
+        showAppSnackBar(
+          context,
+          'Erro ao salvar. Tente novamente.',
+          isError: true,
+        );
     } finally {
       if (mounted) setState(() => _salvando = false);
     }
@@ -151,7 +160,6 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if (_carregandoDados) {
       return Scaffold(
         appBar: AppBar(),
@@ -164,7 +172,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
       formKey: _formKey,
       primaryLabel: 'Salvar filme',
       primaryIcon: Icons.check,
-      isLoading: _carregandoDados,
+      isLoading: _salvando,
       onPrimary: _salvar,
       children: [
         FormSection(
@@ -173,7 +181,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
           child: AppSearchBar(
             controller: _buscaCtrl,
             hint: 'Digite o título do filme',
-            onSearch: _buscarTmdb, 
+            onSearch: _buscarTmdb,
             isLoading: _buscando,
           ),
         ),
@@ -183,10 +191,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
           child: Column(
             spacing: 16,
             children: [
-              PosterPreview(
-                imageUrl: _poster, 
-                width: 140,
-              ),
+              PosterPreview(imageUrl: _poster, width: 140),
               AppTextField(
                 controller: _tituloCtrl,
                 label: 'Título',

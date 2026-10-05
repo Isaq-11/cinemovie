@@ -24,12 +24,15 @@ final appRouter = GoRouter(
   redirect: (context, state) {
     final logado = _authNotifier.isLoggedIn;
     final loc = state.matchedLocation;
-    final naAuth = loc == AppRoutes.login ||
+    final naAuth =
+        loc == AppRoutes.login ||
         loc == AppRoutes.register ||
         loc == AppRoutes.forgotPassword;
 
-    if (!logado && !naAuth) return AppRoutes.login; // deslogado: só telas de auth
-    if (logado && naAuth) return AppRoutes.home;    // logado: sai das telas de auth
+    if (!logado && !naAuth)
+      return AppRoutes.login; // deslogado: só telas de auth
+    if (logado && naAuth)
+      return AppRoutes.home; // logado: sai das telas de auth
     return null;
   },
   routes: [

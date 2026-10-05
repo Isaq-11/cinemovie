@@ -31,9 +31,10 @@ abstract class Repository<T> {
   Future<List<T>> getAll() async => _parse(await col.get());
   Stream<int> watchCount() => col.snapshots().map((s) => s.size);
 
-  Stream<T?> watchById(String id) => col.doc(id).snapshots().map(
-    (d) => d.exists ? fromMap(d.id, d.data()!) : null,
-  );
+  Stream<T?> watchById(String id) => col
+      .doc(id)
+      .snapshots()
+      .map((d) => d.exists ? fromMap(d.id, d.data()!) : null);
 
   Future<T?> getById(String id) async {
     final d = await col.doc(id).get();

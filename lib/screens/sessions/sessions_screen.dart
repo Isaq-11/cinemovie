@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../router/app_routes.dart';
-import '../../mocks/mock_data.dart';
 import '../../widgets/widgets.dart';
+import '../../services/repositories.dart';
+import '../../models/sessao.dart';
 
 class SessionsScreen extends StatefulWidget {
   const SessionsScreen({super.key});
@@ -15,12 +16,17 @@ class _SessionsScreenState extends State<SessionsScreen> {
   static const _filtros = ['Todas', 'Hoje', 'Amanhã'];
   String _filtro = 'Todas';
 
+  final _stream = SessaoRepository.instance.watchAll();
+
+  Future<void> _excluir(Sessao s) async {
+    final ok = await confirmDelete(context, itemName: 'Sessão de ${s.filme}');
+    if (!ok) return;
+    await SessaoRepository.instance.delete(s.id);
+    if (mounted) showAppSnackBar(context, 'Sessão excluída.');
+  }
+
   @override
   Widget build(BuildContext context) {
-    final sessoesFiltradas = _filtro == 'Todas'
-        ? mockSessoes
-        : mockSessoes.where((s) => s.data == _filtro).toList();
-
     return Scaffold(
       appBar: AppBar(title: const Text('Sessões')),
       body: Column(
@@ -38,39 +44,37 @@ class _SessionsScreenState extends State<SessionsScreen> {
           ),
 
           Expanded(
-            child: ItemList<SessaoMock>(
-              items: sessoesFiltradas,
-              empty: EmptyState(
-                icon: Icons.event_busy_outlined,
-                title: 'Nenhuma sessão encontrada',
-                message: 'Não há sessões programadas para este filtro.',
-                actionLabel: 'Nova sessão',
-                onAction: () => context.push(AppRoutes.sessionNew),
-              ),
-              itemBuilder: (context, s, _) {
-                final i = mockSessoes.indexOf(s);
-                return SessionCard(
-                  filmeTitulo: s.filme,
-                  posterUrl: s.poster,
-                  sala: s.sala,
-                  data: s.data,
-                  horario: s.horario,
-                  formato: s.formato,
-                  vendidos: s.vendidos,
-                  capacidade: s.capacidade,
-                  trailing: ItemActionsMenu(
-                    onEdit: () => context.push(AppRoutes.sessionEdit('$i')),
-                    onDelete: () async {
-                      final ok = await confirmDelete(
-                        context,
-                        itemName: 'Sessão de ${s.filme}',
-                      );
-                      if (ok && context.mounted) {
-                        showAppSnackBar(context, 'Sessão excluída.');
-                      }
-                    },
+            child: DataStream<List<Sessao>>(
+              stream: _stream,
+              builder: (context, todas) {
+                final sessoes = _filtro == 'Todas'
+                    ? todas
+                    : todas.where((s) => s.data == _filtro).toList();
+
+                return ItemList<Sessao>(
+                  items: sessoes,
+                  empty: EmptyState(
+                    icon: Icons.event_busy_outlined,
+                    title: 'Nenhuma sessão encontrada',
+                    message: 'Não há sessões programadas para este filtro.',
+                    actionLabel: 'Nova sessão',
+                    onAction: () => context.push(AppRoutes.sessionNew),
                   ),
-                  onTap: () => context.push(AppRoutes.sessionDetail('$i')),
+                  itemBuilder: (context, s, _) => SessionCard(
+                    filmeTitulo: s.filme,
+                    posterUrl: s.poster,
+                    sala: s.sala,
+                    data: s.data,
+                    horario: s.horario,
+                    formato: s.formato,
+                    vendidos: s.vendidos,
+                    capacidade: s.capacidade,
+                    trailing: ItemActionsMenu(
+                      onEdit: () => context.push(AppRoutes.sessionEdit(s.id)),
+                      onDelete: () => _excluir(s),
+                    ),
+                    onTap: () => context.push(AppRoutes.sessionDetail(s.id)),
+                  ),
                 );
               },
             ),

@@ -47,7 +47,9 @@ class _MoviesScreenState extends State<MoviesScreen> {
                   items: filmes,
                   empty: EmptyState(
                     icon: Icons.movie_outlined,
-                    title: _busca.isEmpty ? 'Nenhum filme cadastrado' : 'Nada encontrado',
+                    title: _busca.isEmpty
+                        ? 'Nenhum filme cadastrado'
+                        : 'Nada encontrado',
                     message: _busca.isEmpty
                         ? 'Cadastre seu primeiro filme para criar sessões.'
                         : 'Nenhum filme combina com a busca.',
@@ -60,7 +62,10 @@ class _MoviesScreenState extends State<MoviesScreen> {
                     leading: PosterPreview(imageUrl: f.poster, width: 64),
                     chips: [
                       InfoChip(label: f.genero, icon: Icons.category_outlined),
-                      InfoChip(label: 'Class. ${f.classificacao}', icon: Icons.shield_outlined),
+                      InfoChip(
+                        label: 'Class. ${f.classificacao}',
+                        icon: Icons.shield_outlined,
+                      ),
                     ],
                     trailing: ItemActionsMenu(
                       onEdit: () => context.push(AppRoutes.movieEdit(f.id)),
