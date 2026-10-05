@@ -16,6 +16,7 @@ class SessionCard extends StatelessWidget {
     this.posterUrl,
     this.data,
     this.formato,
+    this.idioma,
     this.onTap,
     this.trailing,
   });
@@ -28,6 +29,7 @@ class SessionCard extends StatelessWidget {
   final String? posterUrl;
   final String? data;
   final String? formato;
+  final String? idioma;
   final VoidCallback? onTap;
   final Widget? trailing;
 
@@ -46,7 +48,10 @@ class SessionCard extends StatelessWidget {
 
       leading: PosterPreview(imageUrl: posterUrl, width: 70),
 
-      chips: [if (formato != null) InfoChip(label: formato!)],
+      chips: [
+        if (formato != null) InfoChip(label: formato!),
+        if (idioma != null) InfoChip(label: idioma!),
+      ],
 
       footer: OccupancyBar(current: vendidos, total: capacidade),
 
