@@ -28,7 +28,26 @@ class _SessionsScreenState extends State<SessionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sessões')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.home);
+            }
+          },
+        ),
+        title: const Text('Sessões'),
+        actions: [
+          IconButton(
+            tooltip: 'Perfil',
+            onPressed: () => context.push(AppRoutes.profile),
+            icon: const Icon(Icons.account_circle_outlined),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

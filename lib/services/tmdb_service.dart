@@ -16,14 +16,13 @@ class TmdbMovie {
   final String sinopse;
   final String? poster;
   final String? ano;
-  final String? genero; // já convertido para os gêneros do app
+  final String? genero; 
 }
 
 class TmdbService {
   static const _key = String.fromEnvironment('TMDB_KEY');
   static const _host = 'api.themoviedb.org';
 
-  // ids de gênero do TMDB → nomes usados em AppOptions.generos
   static const _generos = {
     28: 'Ação',
     12: 'Aventura',
@@ -74,7 +73,6 @@ class TmdbService {
     }).toList();
   }
 
-  /// A busca não traz a duração; ela vem no endpoint de detalhes.
   static Future<int?> duracao(int id) async {
     _checarChave();
     final res = await http

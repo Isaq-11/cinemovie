@@ -25,7 +25,26 @@ class _MoviesScreenState extends State<MoviesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Filmes')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.home);
+            }
+          },
+        ),
+        title: const Text('Filmes'),
+        actions: [
+          IconButton(
+            tooltip: 'Perfil',
+            onPressed: () => context.push(AppRoutes.profile),
+            icon: const Icon(Icons.account_circle_outlined),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

@@ -41,7 +41,26 @@ class _TheatersScreenState extends State<TheatersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Salas')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.home);
+            }
+          },
+        ),
+        title: const Text('Salas'),
+        actions: [
+          IconButton(
+            tooltip: 'Perfil',
+            onPressed: () => context.push(AppRoutes.profile),
+            icon: const Icon(Icons.account_circle_outlined),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

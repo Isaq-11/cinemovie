@@ -226,6 +226,7 @@ class _MovieFormScreenState extends State<MovieFormScreen> {
               ),
               ChoiceChipGroup(
                 label: 'Classificação indicativa',
+                wrapAlignment: WrapAlignment.center,
                 options: AppOptions.classificacoes,
                 selected: _classificacao,
                 onSelected: (v) => setState(() => _classificacao = v),

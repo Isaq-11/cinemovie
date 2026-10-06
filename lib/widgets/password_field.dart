@@ -31,6 +31,7 @@ class _PasswordFieldState extends State<PasswordField> {
       controller: widget.controller,
       label: widget.label,
       obscureText: _oculto,
+      prefixIcon: Icons.password_outlined,
       textInputAction: widget.textInputAction,
       validator: widget.validator,
       autofillHints: widget.autofillHints,
