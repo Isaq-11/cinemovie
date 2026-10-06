@@ -13,7 +13,6 @@ abstract class Repository<T> {
   Map<String, dynamic> toMap(T item);
   int Function(T a, T b)? get sorter => null;
 
-  /// users/{uid}/{collection}
   CollectionReference<Map<String, dynamic>> get col => FirebaseFirestore
       .instance
       .collection('users')
@@ -41,7 +40,6 @@ abstract class Repository<T> {
     return d.exists ? fromMap(d.id, d.data()!) : null;
   }
 
-  /// id == null cria um documento novo; com id, sobrescreve o existente.
   Future<void> save(T item, {String? id}) async {
     if (id == null) {
       await col.add(toMap(item));

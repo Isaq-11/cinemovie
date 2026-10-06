@@ -28,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _carregando = true);
     try {
       await AuthService.instance.login(_emailCtrl.text, _senhaCtrl.text);
-      // o redirect do router leva para a Home
     } on AuthException catch (e) {
       if (mounted) showAppSnackBar(context, e.message, isError: true);
     } finally {

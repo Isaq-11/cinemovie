@@ -14,7 +14,6 @@ class AppShell extends StatelessWidget {
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (i) => navigationShell.goBranch(
           i,
-          // tocar na aba atual volta ao início dela
           initialLocation: i == navigationShell.currentIndex,
         ),
         destinations: const [

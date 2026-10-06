@@ -14,7 +14,6 @@ class AuthService {
 
   final _auth = FirebaseAuth.instance;
 
-  /// Emite quando alguém entra, sai ou muda o perfil (ex.: o nome).
   Stream<User?> get userChanges => _auth.userChanges();
   User? get currentUser => _auth.currentUser;
   bool get isLoggedIn => _auth.currentUser != null;
@@ -42,7 +41,6 @@ class AuthService {
 
   Future<void> logout() => _auth.signOut();
 
-  /// Converte erros do Firebase em mensagens para o usuário.
   Future<void> _run(Future<void> Function() action) async {
     try {
       await action();

@@ -1,10 +1,8 @@
 abstract final class AppRoutes {
-  // Auth
   static const login = '/login';
   static const register = '/register';
   static const forgotPassword = '/forgot-password';
 
-  // Abas (shell)
   static const home = '/home';
   static const movies = '/movies';
   static const theaters = '/theaters';
@@ -12,7 +10,6 @@ abstract final class AppRoutes {
 
   static const profile = '/profile';
 
-  // Formulários e detalhe (o "Path" é o padrão usado no router)
   static const movieNew = '/movies/new';
   static const movieEditPath = '/movies/:id/edit';
   static String movieEdit(String id) => '/movies/$id/edit';

@@ -30,13 +30,12 @@ final appRouter = GoRouter(
         loc == AppRoutes.forgotPassword;
 
     if (!logado && !naAuth)
-      return AppRoutes.login; // deslogado: só telas de auth
+      return AppRoutes.login; 
     if (logado && naAuth)
-      return AppRoutes.home; // logado: sai das telas de auth
+      return AppRoutes.home; 
     return null;
   },
   routes: [
-    // ---- Autenticação ----
     GoRoute(path: AppRoutes.login, builder: (_, _) => const LoginScreen()),
     GoRoute(
       path: AppRoutes.register,
@@ -47,7 +46,6 @@ final appRouter = GoRouter(
       builder: (_, _) => const ForgotPasswordScreen(),
     ),
 
-    // ---- Abas com barra inferior ----
     StatefulShellRoute.indexedStack(
       builder: (_, _, shell) => AppShell(navigationShell: shell),
       branches: [
@@ -86,7 +84,6 @@ final appRouter = GoRouter(
       ],
     ),
 
-    // ---- Telas por cima das abas (sem barra inferior) ----
     GoRoute(path: AppRoutes.profile, builder: (_, _) => const ProfileScreen()),
 
     GoRoute(
@@ -107,8 +104,6 @@ final appRouter = GoRouter(
       builder: (_, state) => TheaterFormScreen(id: state.pathParameters['id']),
     ),
 
-    // ATENÇÃO à ordem: '/sessions/new' PRECISA vir antes de '/sessions/:id',
-    // senão "new" seria interpretado como um id.
     GoRoute(
       path: AppRoutes.sessionNew,
       builder: (_, _) => const SessionFormScreen(),

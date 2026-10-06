@@ -37,7 +37,6 @@ Future<bool> showConfirmDialog(
   return result ?? false;
 }
 
-/// Atalho usado nas 3 listas e no detalhe da sessão.
 Future<bool> confirmDelete(BuildContext context, {required String itemName}) {
   return showConfirmDialog(
     context,

@@ -189,7 +189,7 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
           formato: _formato ?? '2D',
           idioma: _idioma ?? 'Dublado',
           preco: double.parse(_precoCtrl.text.replaceAll(',', '.')),
-          vendidos: _original?.vendidos ?? 0, // edição preserva a lotação
+          vendidos: _original?.vendidos ?? 0, 
         ),
         id: widget.id,
       );
@@ -302,7 +302,7 @@ class _SessionFormScreenState extends State<SessionFormScreen> {
               Row(
                 spacing: 16,
                 crossAxisAlignment:
-                    CrossAxisAlignment.start, // erros de alturas diferentes
+                    CrossAxisAlignment.start, 
                 children: [
                   Expanded(
                     child: AppPickerField(
